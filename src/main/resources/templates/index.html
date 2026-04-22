@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Vehículos</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: bold;
+        }
+        
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        input[type="text"]:focus,
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #4CAF50;
+            box-shadow: 0 0 5px rgba(76, 175, 80, 0.3);
+        }
+        
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            margin-right: 8px;
+        }
+        
+        .checkbox-group label {
+            display: inline;
+            margin: 0;
+            font-weight: normal;
+            cursor: pointer;
+        }
+        
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #45a049;
+        }
+        
+        button:active {
+            background-color: #3d8b40;
+        }
+        
+        .vehiculos-section {
+            margin-top: 40px;
+        }
+        
+        .vehiculos-section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 10px;
+        }
+        
+        #vehiculosList {
+            list-style: none;
+        }
+        
+        .vehiculo-item {
+            background-color: #f9f9f9;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-left: 4px solid #4CAF50;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .vehiculo-info {
+            flex-grow: 1;
+        }
+        
+        .vehiculo-info p {
+            margin: 5px 0;
+            color: #555;
+        }
+        
+        .vehiculo-info strong {
+            color: #333;
+        }
+        
+        .btn-eliminar {
+            background-color: #f44336;
+            padding: 8px 16px;
+            font-size: 14px;
+            width: auto;
+            margin-left: 10px;
+        }
+        
+        .btn-eliminar:hover {
+            background-color: #da190b;
+        }
+        
+        .btn-favorito {
+            background-color: #ff9800;
+            padding: 8px 16px;
+            font-size: 14px;
+            width: auto;
+            margin-left: 10px;
+        }
+        
+        .btn-favorito:hover {
+            background-color: #e68900;
+        }
+        
+        .favorito-badge {
+            display: inline-block;
+            background-color: #ffc107;
+            color: #333;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 8px;
+        }
+        
+        .mensaje-vacio {
+            color: #999;
+            text-align: center;
+            padding: 20px;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Gestión de Vehículos</h1>
+        
+        <form id="vehiculoForm">
+            <div class="form-group">
+                <label for="marca">Marca:</label>
+                <input type="text" id="marca" name="marca" placeholder="Ingrese la marca" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="modelo">Modelo:</label>
+                <input type="text" id="modelo" name="modelo" placeholder="Ingrese el modelo" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="anio">Año:</label>
+                <input type="number" id="anio" name="anio" placeholder="Ingrese el año" min="1900" max="2100" required>
+            </div>
+            
+            <div class="checkbox-group">
+                <input type="checkbox" id="favorito" name="favorito">
+                <label for="favorito">Marcar como favorito</label>
+            </div>
+            
+            <button type="submit">Guardar</button>
+        </form>
+        
+        <div class="vehiculos-section">
+            <h2>Lista de Vehículos</h2>
+            <ul id="vehiculosList">
+                <li class="mensaje-vacio">No hay vehículos registrados</li>
+            </ul>
+        </div>
+    </div>
+    
+    <script>
+        const form = document.getElementById('vehiculoForm');
+        const marcaInput = document.getElementById('marca');
+        const modeloInput = document.getElementById('modelo');
+        const anioInput = document.getElementById('anio');
+        const favoritoInput = document.getElementById('favorito');
+        const vehiculosList = document.getElementById('vehiculosList');
+        
+        cargarVehiculos();
+        
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const marca = marcaInput.value.trim();
+            const modelo = modeloInput.value.trim();
+            const anio = anioInput.value.trim();
+            const favorito = favoritoInput.checked;
+            
+            if (marca && modelo && anio) {
+                guardarVehiculo(marca, modelo, anio, favorito);
+                marcaInput.value = '';
+                modeloInput.value = '';
+                anioInput.value = '';
+                favoritoInput.checked = false;
+                marcaInput.focus();
+            }
+        });
+        
+        function guardarVehiculo(marca, modelo, anio, favorito) {
+            fetch('/api/vehiculos', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ marca, modelo, anio, favorito })
+            })
+            .then(response => response.json())
+            .then(data => {
+                cargarVehiculos();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error al guardar el vehículo');
+            });
+        }
+        
+        function cargarVehiculos() {
+            fetch('/api/vehiculos')
+            .then(response => response.json())
+            .then(data => {
+                mostrarVehiculos(data);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+        
+        function mostrarVehiculos(vehiculos) {
+            vehiculosList.innerHTML = '';
+
+            if (!vehiculos || vehiculos.length === 0) {
+                const li = document.createElement('li');
+                li.className = 'mensaje-vacio';
+                li.textContent = 'No hay vehículos registrados';
+                vehiculosList.appendChild(li);
+                return;
+            }
+
+            vehiculos.forEach(vehiculo => {
+                const li = document.createElement('li');
+                li.className = 'vehiculo-item';
+
+                const info = document.createElement('div');
+                info.className = 'vehiculo-info';
+
+                const marca = document.createElement('p');
+                marca.innerHTML = `<strong>Marca:</strong> ${vehiculo.marca}`;
+
+                const modelo = document.createElement('p');
+                modelo.innerHTML = `<strong>Modelo:</strong> ${vehiculo.modelo}`;
+
+                const anio = document.createElement('p');
+                const anioText = `<strong>Año:</strong> ${vehiculo.anio}`;
+                if (vehiculo.favorito) {
+                    anio.innerHTML = anioText + '<span class="favorito-badge">★ Favorito</span>';
+                } else {
+                    anio.innerHTML = anioText;
+                }
+
+                info.appendChild(marca);
+                info.appendChild(modelo);
+                info.appendChild(anio);
+
+                const btnFavorito = document.createElement('button');
+                btnFavorito.className = 'btn-favorito';
+                btnFavorito.textContent = vehiculo.favorito ? '★ Favorito' : '☆ Favorito';
+
+                btnFavorito.addEventListener('click', () => {
+                    marcarFavorito(vehiculo.id);
+                });
+
+                const btn = document.createElement('button');
+                btn.className = 'btn-eliminar';
+                btn.textContent = 'Eliminar';
+
+                btn.addEventListener('click', () => {
+                    eliminarVehiculo(vehiculo.id);
+                });
+
+                li.appendChild(info);
+                li.appendChild(btnFavorito);
+                li.appendChild(btn);
+
+                vehiculosList.appendChild(li);
+            });
+        }
+        
+        function marcarFavorito(id) {
+            fetch(`/api/vehiculos/${id}/favorito`, {
+                method: 'PUT'
+            })
+            .then(response => response.json())
+            .then(data => {
+                cargarVehiculos();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error al marcar favorito');
+            });
+        }
+        
+        function eliminarVehiculo(id) {
+            if (confirm('¿Está seguro de que desea eliminar este vehículo?')) {
+                fetch(`/api/vehiculos/${id}`, {
+                    method: 'DELETE'
+                })
+                .then(response => {
+                    if (response.ok) {
+                        cargarVehiculos();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error al eliminar el vehículo');
+                });
+            }
+        }
+    </script>
+</body>
+</html>

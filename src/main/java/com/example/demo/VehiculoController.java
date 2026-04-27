@@ -38,21 +38,16 @@ public class VehiculoController {
         return vehiculoService.marcarComoFavorito(id);
     }
 
-    @GetMapping("/favoritos")
-    public List<Vehiculo> obtenerFavoritos() {
-        return vehiculoService.buscarFavoritos();
+    @GetMapping("/buscar")
+    public List<Vehiculo> buscar(
+        @RequestParam(required = false) String marca,
+        @RequestParam(required = false) String modelo,
+        @RequestParam(required = false) String color,
+        @RequestParam(required = false) Integer anio,
+        @RequestParam(required = false) Boolean favorito
+    ) {
+        return vehiculoService.buscarDinamico(marca, modelo, color, anio, favorito);
     }
-
-    @GetMapping("/buscar/marca")
-    public List<Vehiculo> buscarPorMarca(@RequestParam String marca) {
-        return vehiculoService.buscarPorMarca(marca);
-    }
-
-    @GetMapping("/buscar/modelo")
-    public List<Vehiculo> buscarPorModelo(@RequestParam String modelo) {
-        return vehiculoService.buscarPorModelo(modelo);
-    }
-
     @GetMapping("/estadisticas")
     public EstadisticasDTO verEstadisticas() {
         return vehiculoService.verEstadisticas();
